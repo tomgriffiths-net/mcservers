@@ -1,0 +1,20 @@
+{
+    "id_name": "mcservers",
+    "version": 12,
+    "author": "tom",
+    "name": "Minecraft Server Manager",
+    "description": "",
+    "dependencies": {
+        "cli_formatter": 1,
+        "cloudflare_api": 2,
+        "e_winrar": 2,
+        "forge_installer": 2,
+        "minecraft_releases_api": 1,
+        "modrinth_api": 2,
+        "network": 1,
+        "papermc_api_v2": 1,
+        "purpur_downloads_api_v2": 1,
+        "settings": 2,
+        "system_api": 1
+    }
+}
