@@ -1579,6 +1579,7 @@ class mcservers{
     }
     //All servers
     public static function allServers():array{
+        $servers = [];
         foreach(settings::read('servers') as $serverId => $serverData){
             $servers[] = $serverId;
         }
