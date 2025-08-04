@@ -1619,7 +1619,7 @@ class mcservers{
                     $port = "25565";
                     $name = "mc";
                 }
-                $srv = cloudflare_api::createSrvRecord($name,"_minecraft","_tcp",intval($port),"tomgriffiths.net");
+                $srv = cloudflare_api::createSrvRecord($name,"minecraft","tcp",intval($port),"tomgriffiths.net");
                 if(is_string($srv)){
                     settings::set('servers/' . $id . '/cloudflareSRVid',$srv);
                     return true;
