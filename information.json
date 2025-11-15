@@ -5,15 +5,17 @@
     "name": "Minecraft Server Manager",
     "description": "",
     "dependencies": {
-        "cloudflare_api": 2,
-        "e_winrar": 2,
-        "forge_installer": 2,
+        "settings": 2,
         "minecraft_releases_api": 1,
-        "modrinth_api": 2,
-        "network": 1,
         "papermc_api_v2": 1,
         "purpur_downloads_api_v2": 1,
-        "settings": 2,
-        "system_api": 1
+        "forge_installer": 3,
+        "network": 2,
+        "communicator_client": 6,
+        "communicator_server": 10,
+        "system_api": 3,
+        "e_winrar": 2,
+        "cloudflare_api": 3,
+        "modrinth_api": 2
     }
 }
