@@ -1,11 +1,10 @@
 {
     "id_name": "mcservers",
-    "version": 13,
+    "version": 14,
     "author": "tom",
     "name": "Minecraft Server Manager",
     "description": "",
     "dependencies": {
-        "cli_formatter": 1,
         "cloudflare_api": 2,
         "e_winrar": 2,
         "forge_installer": 2,

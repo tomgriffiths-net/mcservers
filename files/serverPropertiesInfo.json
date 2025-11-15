@@ -1,0 +1,323 @@
+{
+    "accepts-transfers": {
+        "values": ["false", "true"],
+        "default": "false",
+        "description": "Allows servers to accept incoming transfers via a transfer packet."
+    },
+    "allow-flight": {
+        "values": ["false", "true"],
+        "default": "false",
+        "description": "Allows users to use flight on the server while in Survival mode."
+    },
+    "allow-nether": {
+        "values": ["false", "true"],
+        "default": "true",
+        "description": "Allows players to travel to the Nether."
+    },
+    "broadcast-console-to-ops": {
+        "values": ["false", "true"],
+        "default": "true",
+        "description": "Send console command outputs to all online operators."
+    },
+    "broadcast-rcon-to-ops": {
+        "values": ["false", "true"],
+        "default": "true",
+        "description": "Send rcon console command outputs to all online operators."
+    },
+    "difficulty": {
+        "values": ["peaceful", "easy", "normal", "hard"],
+        "default": "easy",
+        "description": "Defines the difficulty of the server."
+    },
+    "enable-command-block": {
+        "values": ["false", "true"],
+        "default": "false",
+        "description": "Enables command blocks."
+    },
+    "enable-jmx-monitoring": {
+        "values": ["false", "true"],
+        "default": "false",
+        "description": "Exposes JMX monitoring of server tick times."
+    },
+    "enable-rcon": {
+        "values": ["false", "true"],
+        "default": "false",
+        "description": "Enables remote access to the server console (RCON)."
+    },
+    "enable-status": {
+        "values": ["false", "true"],
+        "default": "true",
+        "description": "Makes the server appear as online in the server list."
+    },
+    "enable-query": {
+        "values": ["false", "true"],
+        "default": "false",
+        "description": "Enables GameSpy4 protocol server listener."
+    },
+    "enforce-secure-profile": {
+        "values": ["false", "true"],
+        "default": "true",
+        "description": "Players without a Mojang-signed public key cannot connect."
+    },
+    "enforce-whitelist": {
+        "values": ["false", "true"],
+        "default": "false",
+        "description": "Enforces the whitelist on the server."
+    },
+    "entity-broadcast-range-percentage": {
+        "values": ["10","25","50","75","100","150","200","250","300","400","500","750","1000"],
+        "default": "100",
+        "description": "Percentage of default entity broadcast range."
+    },
+    "force-gamemode": {
+        "values": ["false", "true"],
+        "default": "false",
+        "description": "Force players to join in the default game mode."
+    },
+    "function-permission-level": {
+        "values": ["1","2","3","4"],
+        "default": "2",
+        "description": "Sets the default permission level for functions."
+    },
+    "gamemode": {
+        "values": ["survival","creative","adventure","spectator"],
+        "default": "survival",
+        "description": "Defines the mode of gameplay."
+    },
+    "generate-structures": {
+        "values": ["false", "true"],
+        "default": "true",
+        "description": "Determines whether structures (such as villages) can be generated."
+    },
+    "generator-settings": {
+        "values": ["string"],
+        "default": "{}",
+        "description": "Settings used to customize world generation (flat world only)."
+    },
+    "hardcore": {
+        "values": ["false", "true"],
+        "default": "false",
+        "description": "If true, server difficulty is set to hard and players are set to spectator mode if they die."
+    },
+    "hide-online-players": {
+        "values": ["false", "true"],
+        "default": "false",
+        "description": "If true, a player list is not sent on status requests."
+    },
+    "initial-disabled-packs": {
+        "values": ["string"],
+        "default": "",
+        "description": "Comma-separated list of datapacks to not be auto-enabled on world creation."
+    },
+    "initial-enabled-packs": {
+        "values": ["string"],
+        "default": "vanilla",
+        "description": "Comma-separated list of datapacks to be enabled during world creation."
+    },
+    "level-name": {
+        "values": ["string"],
+        "default": "world",
+        "description": "The world name and its folder name."
+    },
+    "level-seed": {
+        "values": ["string"],
+        "default": "",
+        "description": "Sets a world seed; a blank seed generates a random one."
+    },
+    "level-type": {
+        "values": ["minecraft:normal","minecraft:flat","minecraft:large_biomes","minecraft:amplified","minecraft:single_biome_surface"],
+        "default": "minecraft:normal",
+        "description": "Determines the world preset that is generated."
+    },
+    "log-ips": {
+        "values": ["false", "true"],
+        "default": "true",
+        "description": "If false, client IP addresses are not shown in log messages."
+    },
+    "max-chained-neighbor-updates": {
+        "values": ["integer"],
+        "default": 1000000,
+        "description": "Limit of consecutive neighbor updates before skipping additional ones."
+    },
+    "max-players": {
+        "values": ["integer"],
+        "int_max": 2147483647,
+        "int_min": 0,
+        "default": "20",
+        "description": "Maximum number of players that can play on the server at the same time."
+    },
+    "max-tick-time": {
+        "values": ["integer"],
+        "int_max": 9223372036854775807,
+        "int_min": -1,
+        "default": "60000",
+        "description": "Maximum number of milliseconds a single tick may take before watchdog stops the server."
+    },
+    "max-world-size": {
+        "values": ["integer"],
+        "int_max": 29999984,
+        "int_min": 1,
+        "default": 29999984,
+        "description": "Maximum world border radius in blocks."
+    },
+    "motd": {
+        "values": ["string"],
+        "default": "A Minecraft Server",
+        "description": "Message displayed in the server list of the client, below the name."
+    },
+    "network-compression-threshold": {
+        "values": ["integer"],
+        "default": 256,
+        "description": "Packet size threshold at which server packets are compressed."
+    },
+    "online-mode": {
+        "values": ["false", "true"],
+        "default": "true",
+        "description": "Server checks connecting players against Minecraft account database."
+    },
+    "op-permission-level": {
+        "values": ["0","1","2","3","4"],
+        "default": "4",
+        "description": "Default permission level for ops (via /op)."
+    },
+    "player-idle-timeout": {
+        "values": ["integer"],
+        "default": 0,
+        "description": "If non-zero, players are kicked if idle for more than that many minutes."
+    },
+    "prevent-proxy-connections": {
+        "values": ["false", "true"],
+        "default": "false",
+        "description": "If the ISP/AS sent from the server is different from Mojang’s authentication server, the player is kicked."
+    },
+    "pvp": {
+        "values": ["false", "true"],
+        "default": "true",
+        "description": "Enable PvP on the server."
+    },
+    "query.port": {
+        "values": ["integer"],
+        "int_max": 65534,
+        "int_min": 1,
+        "default": 25565,
+        "description": "Port for the query server (see enable-query)."
+    },
+    "rate-limit": {
+        "values": ["integer"],
+        "default": 0,
+        "description": "Maximum amount of packets a user can send before getting kicked. 0 disables this feature."
+    },
+    "rcon.password": {
+        "values": ["string"],
+        "default": "",
+        "description": "Password for RCON."
+    },
+    "rcon.port": {
+        "values": ["integer"],
+        "int_max": 65534,
+        "int_min": 1,
+        "default": 25575,
+        "description": "RCON network port."
+    },
+    "region-file-compression": {
+        "values": ["deflate", "lz4", "none"],
+        "default": "deflate",
+        "description": "Algorithm for compression of chunks in region files."
+    },
+    "resource-pack": {
+        "values": ["string"],
+        "default": "",
+        "description": "Optional URI to a resource pack."
+    },
+    "resource-pack-id": {
+        "values": ["string"],
+        "default": "",
+        "description": "Optional UUID for the resource pack."
+    },
+    "resource-pack-prompt": {
+        "values": ["string"],
+        "default": "",
+        "description": "Custom message shown on resource pack prompt."
+    },
+    "resource-pack-sha1": {
+        "values": ["string"],
+        "default": "",
+        "description": "Optional SHA-1 digest of the resource pack."
+    },
+    "require-resource-pack": {
+        "values": ["false", "true"],
+        "default": "false",
+        "description": "If true, players are prompted then disconnected if they decline the required pack."
+    },
+    "server-ip": {
+        "values": ["string"],
+        "default": "",
+        "description": "IP the server binds to; leave blank to bind to all."
+    },
+    "server-port": {
+        "values": ["integer"],
+        "int_max": 65534,
+        "int_min": 1,
+        "default": 25565,
+        "description": "Port the server listens on."
+    },
+    "simulation-distance": {
+        "values": ["integer"],
+        "int_max": 32,
+        "int_min": 3,
+        "default": 10,
+        "description": "Max distance in chunks for entity updates."
+    },
+    "snooper-enabled": {
+        "values": ["false", "true"],
+        "default": "true",
+        "description": "Whether the server sends snoop data regularly to snoop.minecraft.net."
+    },
+    "spawn-animals": {
+        "values": ["false", "true"],
+        "default": "true",
+        "description": "Determines if animals can spawn."
+    },
+    "spawn-monsters": {
+        "values": ["false", "true"],
+        "default": "true",
+        "description": "Determines if monsters can spawn."
+    },
+    "spawn-npcs": {
+        "values": ["false", "true"],
+        "default": "true",
+        "description": "Determines whether villagers can spawn."
+    },
+    "spawn-protection": {
+        "values": ["integer"],
+        "default": 16,
+        "description": "Side length of the square spawn protection area is 2x+1."
+    },
+    "sync-chunk-writes": {
+        "values": ["false", "true"],
+        "default": "true",
+        "description": "Enables synchronous chunk writes."
+    },
+    "text-filtering-config": {
+        "values": ["string"],
+        "default": "",
+        "description": ""
+    },
+    "use-native-transport": {
+        "values": ["false", "true"],
+        "default": "true",
+        "description": "Enable Linux packet sending/receiving optimization."
+    },
+    "view-distance": {
+        "values": ["integer"],
+        "int_max": 32,
+        "int_min": 3,
+        "default": 10,
+        "description": "Amount of world data the server sends the client (chunks in each direction)."
+    },
+    "white-list": {
+        "values": ["false", "true"],
+        "default": "false",
+        "description": "Enables a whitelist on the server."
+    }
+}
