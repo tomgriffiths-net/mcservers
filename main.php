@@ -1474,6 +1474,39 @@ class mcservers{
 
         return $servers;
     }
+    public static function manager_getStates(bool $checkSettings=false):array|false{
+        $allServers = self::allServers();
+        if(!is_array($allServers)){
+            return false;
+        }
+
+        $states = [];
+        foreach($allServers as $server){
+            $states[$server]['state'] = (isset(self::$serverStats[$server]) ? self::$serverStats[$server]['state'] : "stopped");
+
+            if($checkSettings){
+                $info = self::serverInfo($server);
+                if(!is_array($info)){
+                    continue;
+                }
+
+                if(isset($info['name']) && is_string($info['name'])){
+                    $states[$server]['name'] = $info['name'];
+                }
+                if(isset($info['version']['type']) && is_string($info['version']['type'])){
+                    $states[$server]['type'] = $info['version']['type'];
+                }
+                if(isset($info['version']['version']) && is_string($info['version']['version'])){
+                    $states[$server]['version'] = $info['version']['version'];
+                }
+                if(isset($info['run']['max_ram_mb']) && is_int($info['run']['max_ram_mb'])){
+                    $states[$server]['memory'] = $info['run']['max_ram_mb'];
+                }
+            }
+        }
+
+        return $states;
+    }
     public static function serverDir():string|false{
         $path = settings::read('serversPath');
         if(!is_string($path)){
