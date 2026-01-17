@@ -279,7 +279,7 @@ class mcservers{
     }
     //Server information
     public static function serverTypeInfo(string $type):array{
-        $info = array(
+        $info = [
             "allowMods" => false,
             "modsLimit" => 0,
             "modsFolder" => "mods",
@@ -304,7 +304,7 @@ class mcservers{
             "usesInstaller" => false,
 
             "customSettings" => false
-        );
+        ];
 
         if($type === "forge"){
             $info["allowMods"] = true;
@@ -312,6 +312,13 @@ class mcservers{
         }
         elseif($type === "paper" || $type === "purpur"){
             $info["allowPlugins"] = true;
+        }
+        elseif($type === "velocity"){
+            $info["allowPlugins"] = true;
+            $info["allowDatapacks"] = false;
+            $info["allowResourcepacks"] = false;
+            $info["hasPropertiesFile"] = false;
+            $info["hasEula"] = false;
         }
 
         return $info;
@@ -332,21 +339,17 @@ class mcservers{
         return false;
     }
     public static function parseServerData(array $serverData):array{
-        $latestVersion = minecraft_releases_api::getLatest();
-        if(!is_string($latestVersion)){
-            $latestVersion = "1.20.4";
-        }
         $newServerData = array(
             'name'    => 'Server - ' . date("Y-m-d H:i:s"),
 
             'version' => array(
                 'type'            => 'vanilla',
-                'version'         => $latestVersion,
+                'version'         => '1.21.11',
                 'special_version' => ''
             ),
 
             'run'     => array(
-                'max_ram_mb' => 4096,
+                'max_ram_mb' => 2048,
                 'nogui'      => false
             ),
 
@@ -488,7 +491,7 @@ class mcservers{
         return false;
     }
     //Server creation
-    public static function createServer(array $serverData = array()):bool{
+    public static function createServer(array $serverData=[]):bool|string{
         $serverData = self::parseServerData($serverData);
         
         $serversPath = self::serverDir();
@@ -508,7 +511,7 @@ class mcservers{
             return false;
         }
 
-        mklog('general','Creating server with id ' . $server,false);
+        mklog(1, 'Creating server with id ' . $server);
 
         if($server === "001"){
             $serverPort = "25565";
@@ -553,7 +556,7 @@ class mcservers{
                 $return = true;
             }
         }
-        elseif($serverData['version']['type'] === "waterfall" ){
+        elseif($serverData['version']['type'] === "waterfall"){
             $jarPath = papermc_api_v2::filePath("waterfall",$serverData['version']['version'],$serverData['version']['special_version'],true);
             if(is_string($jarPath)){
                 $jarName = files::getFileName($jarPath);
@@ -631,8 +634,9 @@ class mcservers{
         if($return === true){
             json::writeFile($serverDir . "\\mcserversInfo.json", $serverData, true);
             txtrw::mktxt($serverDir . "\\eula.txt","eula=true",true);
+
             self::getServerStats($server);
-            return true;
+            return $server;
         }
         return false;
     }
