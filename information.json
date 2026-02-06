@@ -1,21 +1,22 @@
 {
     "id_name": "mcservers",
-    "version": 16,
+    "version": 17,
     "author": "tom",
     "name": "Minecraft Server Manager",
     "description": "",
     "dependencies": {
-        "settings": 2,
-        "minecraft_releases_api": 1,
-        "papermc_api_v2": 1,
-        "purpur_downloads_api_v2": 1,
-        "forge_installer": 3,
-        "network": 2,
         "communicator_client": 6,
         "communicator_server": 10,
+        "e_winrar": 3,
+        "forge_installer": 3,
+        "minecraft_releases_api": 4,
+        "modrinth_api": 2,
+        "network": 2,
+        "papermc_downloads_api_v3": 1,
+        "purpur_downloads_api_v2": 2,
+        "settings": 3,
+        "symfony_yaml_container": 1,
         "system_api": 3,
-        "e_winrar": 2,
-        "cloudflare_api": 3,
-        "modrinth_api": 2
+        "yosymfony_toml_container": 2
     }
 }

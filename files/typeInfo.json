@@ -1,0 +1,162 @@
+{
+    "default": {
+        "configVersion": 2,
+        "name": "",
+        "version": {},
+        "run": {
+            "maxMem": 2048,
+            "minMem": 0,
+            "hideGui": true,
+            "jarFile": "",
+            "customArgsOverwriteRun": false,
+            "customArgs": "",
+            "minJavaVersion": 0,
+            "stopCommand": "stop"
+        },
+        "setup":{
+            "jarPathFunction": "minecraft_releases_api::filePath('<version>', false, true)",
+            "installerFunction": false,
+            "startServerToMakeConfigFiles": false
+        },
+        "abilities": {
+            "mods": false,
+            "modsLimit": 0,
+            "modsFolder": "mods",
+            "plugins": false,
+            "pluginsLimit": 0,
+            "pluginsFolder": "plugins",
+            "datapacks": true,
+            "datapacksLimit": 0,
+            "datapacksFolder": "%worldname%\/datapacks",
+            "resourcepacks": true,
+            "resourcepacksLimit": 1,
+            "resourcepacksFolder": "url"
+        },
+        "spec": {
+            "hasPropertiesFile": true,
+            "hasEula": true,
+            "hasRcon": true,
+            "defaultPort": 25565
+        },
+        "specialSettings": {}
+    },
+    "types": {
+        "vanilla": {},
+        "forge": {
+            "run": {
+                "maxMem": 4096,
+                "jarFile": false,
+                "customArgs": "<file:libraries/net/minecraftforge/forge/<version>-<specialversion>/win_args.txt>"
+            },
+            "setup":{
+                "installerFunction": "forge_installer::installForge('<version>', '<specialversion>', '<serverdiresc>');",
+                "jarPathFunction": false
+            },
+            "abilities": {
+                "mods": true
+            }
+        },
+        "forge:1.20.3": {
+            "run": {
+                "jarFile": "forge-<version>-<specialversion>-shim.jar",
+                "customArgs": ""
+            }
+        },
+        "paper+velocity+waterfall": {
+            "setup":{
+                "jarPathFunction": "papermc_downloads_api_v3::jarPath('<type>', '<version>', <specialversion>);"
+            }
+        },
+        "purpur": {
+            "setup":{
+                "jarPathFunction": "purpur_downloads_api_v2::filePath('purpur', '<version>', <specialversion>, true);"
+            }
+        },
+        "paper+purpur": {
+            "abilities": {
+                "plugins": true
+            }
+        },
+        "velocity+waterfall": {
+            "run": {
+                "maxMem": 512,
+                "hideGui": false
+            },
+            "setup":{
+                "startServerToMakeConfigFiles": true
+            },
+            "abilities": {
+                "plugins": true,
+                "datapacks": false,
+                "resourcepacks": false
+            },
+            "spec": {
+                "hasPropertiesFile": false,
+                "hasEula": false,
+                "hasRcon": false
+            }
+        },
+        "velocity": {
+            "specialSettings": {
+                "bind": {
+                    "file": "velocity.toml",
+                    "format": "toml",
+                    "setting": "bind"
+                }
+            }
+        },
+        "waterfall": {
+            "spec": {
+                "defaultPort": 25577
+            },
+            "specialSettings": {
+                "bind": {
+                    "file": "config.yml",
+                    "format": "yaml",
+                    "setting": "listeners/0/host"
+                }
+            },
+            "run": {
+                "stopCommand": "end"
+            }
+        }
+    },
+    "getLatest": {
+        "vanilla": {
+            "version": "minecraft_releases_api::getLatest('<channel>');",
+            "listVersions": "minecraft_releases_api::listVersions('<channel>');",
+            "channels": [
+                "release",
+                "snapshot"
+            ],
+            "minimumJavaVersion": "minecraft_releases_api::minimumJavaVersion('<version>')"
+        },
+        "forge": {
+            "version": "array_key_first(forge_installer::listVersions())",
+            "listVersions": "array_keys(forge_installer::listVersions())",
+            "specialVersion": "forge_installer::listVersions()['<version>'][0]",
+            "listSpecialVersions": "forge_installer::listVersions()['<version>']"
+        },
+        "paper+velocity+waterfall": {
+            "version": "papermc_downloads_api_v3::listVersions('<type>')[0]",
+            "listVersions": "papermc_downloads_api_v3::listVersions('<type>')",
+            "specialVersion": "max(papermc_downloads_api_v3::listBuilds('<type>','<version>','<channel>'))",
+            "specialVersionSuccessType": "integer",
+            "listSpecialVersions": "papermc_downloads_api_v3::listBuilds('<type>','<version>','<channel>')",
+            "channels": [
+                "stable",
+                "beta",
+                "alpha"
+            ],
+            "customArgs": "implode(' ', papermc_downloads_api_v3::customJavaInfo('<type>','<version>')['flags']['recommended'])",
+            "minimumJavaVersion": "papermc_downloads_api_v3::customJavaInfo('<type>','<version>')['version']['minimum']"
+        },
+        "purpur": {
+            "version": "purpur_downloads_api_v2::getLatestVersion('purpur');",
+            "listVersions": "purpur_downloads_api_v2::listVersions('purpur');",
+            "specialVersion": "purpur_downloads_api_v2::getLatestBuild('purpur', '<version>')",
+            "specialVersionSuccessType": "integer",
+            "listSpecialVersions": "purpur_downloads_api_v2::listBuilds('purpur', '<version>')"
+        }
+    }
+}

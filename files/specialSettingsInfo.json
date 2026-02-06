@@ -1,0 +1,19 @@
+{
+    "bind": {
+        "desc": "A host and port combination",
+        "type": "string",
+        "pattern": "(?:[0-9]{1,3}\\.){3}[0-9]{1,3}:[0-9]{1,5}"
+    },
+    "port": {
+        "desc": "The port the server runs on",
+        "type": "integer",
+        "min": 0,
+        "max": 65535
+    },
+    "host": {
+        "desc": "The ip address the server runs on",
+        "type": "string",
+        "pattern": "(?:[0-9]{1,3}\\.){3}[0-9]{1,3}",
+        "default": "0.0.0.0"
+    }
+}
