@@ -1282,10 +1282,17 @@ class mcservers{
     }
     //Server status
     public static function getServerStats(string $id):array|false{
-        if(self::validateId($id,false)){
-            return self::sendCompanionData($id,"getStats");
+        if(!self::validateId($id,false)){
+            return false;
         }
-        return false;
+        
+        $result = self::manage($id,"getStats");
+
+        if(!is_array($result) || !isset($result['stats']) || !is_array($result['stats'])){
+            return false;
+        }
+
+        return $result['stats'];
     }
     public static function pingServer(string $id, float $timeout=0.2):bool{
         if(self::validateId($id,false)){
@@ -1314,23 +1321,18 @@ class mcservers{
     }
     public static function mirrorConsole(string $id, int $interval=1){
         while(true){
-            echo self::sendCompanionData($id,"getStats")['newoutput'];
+            $stats = self::getServerStats($id);
+            if(is_array($stats) && isset($stats['newoutput']) && is_string($stats['newoutput'])){
+                echo $stats['newoutput'];
+            }
             sleep($interval);
         }
     }
-    public static function sendCompanionData(string $id, string $action, string $payload=""):array|bool{
-        if(!self::validateId($id, true)){
-            return false;
-        }
-
+    public static function manageSuccess(string $id, string $action, string $payload=""):bool{
         $result = self::manage($id, $action, $payload);
 
         if(!is_array($result) || !isset($result['success']) || !$result['success']){
             return false;
-        }
-
-        if($action === "getStats"){
-            return isset($result['stats']) ? $result['stats'] : false;
         }
 
         return true;
@@ -1343,7 +1345,18 @@ class mcservers{
             return false;
         }
 
-        return communicator_client::runfunction('mcservers::manager_run("' . $id . '", unserialize(base64_decode("' . base64_encode(serialize($action)) . '")), unserialize(base64_decode("' . base64_encode(serialize($extra)) . '")))');
+        $result = communicator_client::customAction("mcservers", "manage", [$id, $action, $extra]);
+
+        if(!is_array($result)){
+            mklog(2, "Manager error: Failed to contact manager");
+            return false;
+        }
+
+        if(isset($result['error']) && is_string($result['error'])){
+            mklog(2, "Manager error: " . $result['error']);
+        }
+
+        return $result;
     }
 
     //Run by communicator
@@ -1433,6 +1446,30 @@ class mcservers{
                 "type" => "shutdown",
                 "function" => 'mcservers::manager_stop()'
             ],
+        ];
+    }
+    public static function communicatorServerActions():array{
+        return [
+            "manage" => [
+                "function" => "mcservers::manager_run",
+                "args" => [
+                    "--0",
+                    "--1",
+                    "--2"
+                ],
+                "defArgs" => [
+                    2 => null
+                ]
+            ],
+            "getManagerStates" =>[
+                "function" => "mcservers::manager_getServerStates",
+                "args" => [
+                    "--0",
+                ],
+                "defArgs" => [
+                    0 => false
+                ]
+            ]
         ];
     }
 
@@ -2120,7 +2157,7 @@ class mcservers{
             }
         }
 
-        if(!self::sendCompanionData($id, "backup", $backupName)){
+        if(!self::manageSuccess($id, "backup", $backupName)){
             mklog(2, 'Failed to perform backup ' . $backupName . ' for server ' . $id);
             return false;
         }
@@ -2134,10 +2171,10 @@ class mcservers{
         return true;
     }
     public static function start(string $id):bool{
-        return self::sendCompanionData($id,"start");
+        return self::manageSuccess($id, "start");
     }
     public static function stop(string $id):bool{
-        return self::sendCompanionData($id,"stop");
+        return self::manageSuccess($id,"stop");
     }
     public static function addMainServer(string $id):bool{
         if(self::validateId($id,false)){
@@ -2174,7 +2211,7 @@ class mcservers{
         return settings::set('mainServers', $servers, true);
     }
     public static function sendCommand(string $id, string $command):bool{
-        return self::sendCompanionData($id, "sendCommand", $command);
+        return self::manageSuccess($id, "sendCommand", $command);
     }
     public static function deleteServer(string $id, bool $silent=false):bool{
         if(!self::validateId($id,false)){
@@ -2213,7 +2250,7 @@ class mcservers{
     }
     //All servers
     public static function getManagerServerStates(bool $checkSettings=false):array|false{
-        return communicator_client::runfunction('mcservers::manager_getServerStates(' . ($checkSettings ? 'true' : 'false') . ')');
+        return communicator_client::customAction("mcservers", "getManagerStates", [$checkSettings]);
     }
     public static function allServers():array|false{
         $servers = [];
