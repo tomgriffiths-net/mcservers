@@ -1,12 +1,12 @@
 {
     "id_name": "mcservers",
-    "version": 18,
+    "version": 19,
     "author": "tom",
     "name": "Minecraft Server Manager",
     "description": "",
     "dependencies": {
         "communicator_client": 9,
-        "communicator_server": 14,
+        "communicator_server": 15,
         "e_winrar": 3,
         "forge_installer": 3,
         "minecraft_releases_api": 4,

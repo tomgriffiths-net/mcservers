@@ -1,10 +1,18 @@
 <?php
+/**
+ * A package for controlling minecraft servers.
+ * @author Tom Griffiths
+ * @version 19
+ */
 class mcservers{
     private static $localServerStats = [];
     private static $serverStats = [];
     private static $serverPropertiesCache = [];
     private static $bypassCommunicatorRunRequrement = false;
     //CLI functions
+    /**
+     * @internal
+     */
     public static function init():void{
         $defaultSettings = array(
             "serversPath"            => "mcservers",
@@ -112,6 +120,9 @@ class mcservers{
             }
         }
     }
+    /**
+     * @internal
+     */
     public static function command($line):void{
         $lines = str_getcsv($line, ' ', '"', "\\");
         if($lines[0] === "server"){
@@ -338,6 +349,11 @@ class mcservers{
 
         return $defaults;
     }
+    /**
+     * Lists the known server types in the typeInfo.json file.
+     *
+     * @return array|false A list of server types on success or false on failure.
+     */
     public static function listKnownServerTypes():array|false{
         $defaults = self::readServerTypeInfo();
         if($defaults === false){return false;}
@@ -360,6 +376,15 @@ class mcservers{
 
         return $knownTypes;
     }
+    /**
+     * Gets the default server information for a given minecraft server type and version.
+     *
+     * @param string $requestedType The type ofminecraft server.
+     * @param string $requestedVersion The version of minecraft.
+     * @param string|integer $requestedSpecialVersion The type specific sub version.
+     * @param boolean $checkType Default of true. Is weather to check if the server type actually exists in the typeInfo.json file.
+     * @return array|false Returns the default server information for a specific type and version on success or false on failure.
+     */
     public static function serverTypeInfo(string $requestedType, string $requestedVersion, string|int $requestedSpecialVersion, $checkType=true):array|false{
         $defaults = self::readServerTypeInfo();
         if($defaults === false){return false;}
@@ -408,6 +433,12 @@ class mcservers{
 
         return $info;
     }
+    /**
+     * Gets the information on how to find the latest version information for a given server type.
+     *
+     * @param string $requestedType The type of minecraft server.
+     * @return array|false Information on how to get the latest version information for the server type.
+     */
     public static function serverTypeGetLatestInfo(string $requestedType):array|false{
         $typeInfo = self::readServerTypeInfo();
         if(!is_array($typeInfo)){
@@ -428,6 +459,13 @@ class mcservers{
 
         return false;
     }
+    /**
+     * Tests weather a given server id is valid.
+     *
+     * @param string $id The id to be tested.
+     * @param boolean $dontTestFile Skips checking if the server actually exists.
+     * @return boolean Weather the id is valid.
+     */
     public static function validateId(string $id, bool $dontTestFile):bool{
         if(strlen($id) === 3 && preg_match("/^[0-9]+$/",$id)){
             if($dontTestFile){
@@ -443,6 +481,12 @@ class mcservers{
 
         return false;
     }
+    /**
+     * Finds out if a specific server has RCON enabled or not.
+     *
+     * @param string $id The id of the server.
+     * @return boolean True if the server has RCON enabled, false otherwise.
+     */
     public static function serverHasRcon(string $id):bool{
         $serverInfo = self::serverInfo($id);
         if(!is_array($serverInfo)){
@@ -463,6 +507,12 @@ class mcservers{
 
         return false;
     }
+    /**
+     * Gets the server information for a specific server.
+     *
+     * @param string $id The id of the server.
+     * @return mixed An array of server information on success or false on failure.
+     */
     public static function serverInfo(string $id):mixed{
         $serversPath = self::serverDir($id);
         if(is_string($serversPath)){
@@ -480,9 +530,20 @@ class mcservers{
         return json::writeFile($serverDir . "\\mcserversInfo.json", $info, true);
     }
     //Server properties file
+    /**
+     * Gets the standard server.properties file information.
+     *
+     * @return array|false An array describing all parts of a properties file on success or false on failure.
+     */
     public static function serverPropertiesFileInfo():array|false{
         return json::readFile('packages/mcservers/files/serverPropertiesInfo.json');
     }
+    /**
+     * Reads a servers server.properties file.
+     *
+     * @param string $id The id of the server.
+     * @return array|false The parsed properties file on success or false on failure.
+     */
     public static function parseServerPropertiesFile(string $id):array|false{
         if(!self::validateId($id,false)){
             return false;
@@ -501,6 +562,13 @@ class mcservers{
 
         return parse_ini_file($serverDir . "\\" . $id . "\\server.properties", true);
     }
+    /**
+     * Writes a servers server.properties file.
+     *
+     * @param string $id The id of the server.
+     * @param array $data The data to put in the server.properties file.
+     * @return boolean True on success or false on failure.
+     */
     public static function writeServerPropertiesFile(string $id, array $data):bool{
         if(!self::validateId($id,false)){
             return false;
@@ -519,6 +587,13 @@ class mcservers{
 
         return self::writeIniFile($serversDir . "\\" . $id . "\\server.properties", $data);
     }
+    /**
+     * Edits a servers server.properties file, usefull for changing single settings.
+     *
+     * @param string $id The id of the server.
+     * @param array $edits An array of changes to the properties file.
+     * @return boolean True on success or false on failure.
+     */
     public static function editServerPropertiesFile(string $id, array $edits):bool{
         $existing = self::parseServerPropertiesFile($id);
         if(!is_array($existing)){
@@ -530,6 +605,13 @@ class mcservers{
         return self::writeServerPropertiesFile($id, $data);
     }
     //Server creation
+    /**
+     * Creates a minecraft server.
+     *
+     * @param array $version An array optionally specifying a type, version, specialVersion and channel.
+     * @param array $serverData An array of overrides to the default server information such as the servers name, memory and more, see the github readme Server Data section.
+     * @return string|false The id of the server on success or false on failure.
+     */
     public static function createServer(array $version=[], array $serverData=[]):string|false{
         $version = self::makeVersionInfo($version);
         if(!is_array($version)){
@@ -665,7 +747,7 @@ class mcservers{
             "host" => "0.0.0.0",
         ] as $setting => $value){
             if(isset($serverData['specialSettings'][$setting]) && is_array($serverData['specialSettings'][$setting])){
-                if(!self::specialSetting($server, $setting, "write", $value, true)){
+                if(!self::specialSetting($server, $setting, "write", $value, true, true)){
                     mklog(2, "Failed to edit custom " . $setting . " setting");
                     return false;
                 }
@@ -674,6 +756,14 @@ class mcservers{
 
         return $server;
     }
+    /**
+     * Updates a server.
+     *
+     * @param string $id The id of the minecraft server.
+     * @param array $version An array optionally specifying the version, special version or channel to use for the update.
+     * @param boolean $keepArgs If the server type has a way of getting default JVM arguments, setting this to true will preserve the customArgs (it will not update them).
+     * @return boolean Weather the update was successful or not.
+     */
     public static function updateServer(string $id, array $version=[], bool $keepArgs=false):bool{
         $serverData = self::serverInfo($id);
         if(!is_array($serverData)){
@@ -746,6 +836,12 @@ class mcservers{
 
         return $serverData;
     }
+    /**
+     * Fills out the version information using the Getlatest data, see readme.
+     *
+     * @param array $version An array optionally specifying a type, channel, version or special version.
+     * @return array|null The full version array with type, version and special version set correctly or null on failure.
+     */
     public static function makeVersionInfo(array $version):?array{
         if(isset($version['type']) && is_string($version['type']) && isset($version['version']) && is_string($version['version']) && isset($version['specialVersion']) && in_array(gettype($version['specialVersion']), ["string", "integer"])){
             return $version;
@@ -807,13 +903,6 @@ class mcservers{
 
         return $version;
     }
-    public static function whatJavaVersionIsInstalled():int{
-        $versionString = shell_exec("java --version");
-        if(preg_match('/(?:java|openjdk)\s+(?:version\s+)?"?(\d+)/', $versionString, $matches)){
-            return (int) $matches[1];
-        }
-        return 0;
-    }
     private static function doChannelSelection(array $getLatest, ?string $wantedChannel=null):string{
         if(is_string($wantedChannel)){
             if(!isset($getLatest['channels']) || !is_array($getLatest['channels'])){
@@ -834,6 +923,24 @@ class mcservers{
         
         return "";
     }
+    /**
+     * Gets the major version of the currently installed java version.
+     *
+     * @return integer The major java version that is installed or 0 on failure.
+     */
+    public static function whatJavaVersionIsInstalled():int{
+        $versionString = shell_exec("java --version");
+        if(preg_match('/(?:java|openjdk)\s+(?:version\s+)?"?(\d+)/', $versionString, $matches)){
+            return (int) $matches[1];
+        }
+        return 0;
+    }
+    /**
+     * Lists the available update channels for a specific server type.
+     *
+     * @param string $type The type of minecraft server.
+     * @return array|null The list of channels on success or null on failure.
+     */
     public static function listChannels(string $type):?array{
         $getLatest = self::serverTypeGetLatestInfo($type);
         if(!is_array($getLatest)){
@@ -847,6 +954,14 @@ class mcservers{
 
         return $getLatest['channels'];
     }
+    /**
+     * Lists the available versions for a specific server type, optionally using a specific update channel and after a specific version.
+     *
+     * @param string $type The type of minecraft server.
+     * @param string|null $channel The update channel to use.
+     * @param string|null $after Specifies weather to show all versions after a specific version.
+     * @return array|null The list of versions matching the criteria on success or false on failure.
+     */
     public static function listVersions(string $type, ?string $channel=null, ?string $after=null):?array{
         $getLatest = self::serverTypeGetLatestInfo($type);
         if(!is_array($getLatest)){
@@ -882,6 +997,14 @@ class mcservers{
 
         return $versions;
     }
+    /**
+     * Lists the special versions for a specific server type and version.
+     *
+     * @param string $type The type of the minecraft server.
+     * @param string $version The minecraft version of the minecraft server.
+     * @param string|null $channel The update channel to use.
+     * @return array|null A list of available special versions on success or null on failure.
+     */
     public static function listSpecialVersions(string $type, string $version, ?string $channel=null):?array{
         $getLatest = self::serverTypeGetLatestInfo($type);
         if(!is_array($getLatest)){
@@ -904,6 +1027,14 @@ class mcservers{
 
         return $specialVersions;
     }
+    /**
+     * Gets the minimum required major java version required to run a minecraft server of a specific type, version and special version.
+     *
+     * @param string $type The type of minecraft server.
+     * @param string $version The minecraft version of the server.
+     * @param string|integer $specialVersion The special version of the server.
+     * @return integer|null An integer on success or null on failure, 0 means that type or version does not have a minimum required java version.
+     */
     public static function minJavaVersion(string $type, string $version, string|int $specialVersion):?int{
         $getLatest = self::serverTypeGetLatestInfo($type);
         if(!is_array($getLatest)){
@@ -924,6 +1055,14 @@ class mcservers{
 
         return intval($requiredVersion);
     }
+    /**
+     * Gets the default extra JVM arguments for a specific server type, version and special version.
+     *
+     * @param string $type The type of the server.
+     * @param string $version The minecraft version of the server.
+     * @param string|integer $specialVersion The special version of the server.
+     * @return string The default extra JVM arguments or an empty string if there are no default arguments.
+     */
     public static function defaultArgs(string $type, string $version, string|int $specialVersion):string{
         $getLatest = self::serverTypeGetLatestInfo($type);
         if(!is_array($getLatest)){
@@ -944,6 +1083,14 @@ class mcservers{
         return $customArgs;
     }
     //Data processing
+    /**
+     * Replaces things like <words> with variable values, see string replacements in the readme.
+     *
+     * @param string $string The string that will be modified.
+     * @param array $version An array containing info for the type, version, special version and channel.
+     * @param string $serverdir The value for the <serverdir> replacement, usually a specific server folder.
+     * @return string The modified string.
+     */
     public static function tagServerInfo(string $string, array $version, string $serverdir):string{
 
         while(true){
@@ -1053,6 +1200,13 @@ class mcservers{
         
         return null; // No <> found
     }
+    /**
+     * Recirsively merge an array.
+     *
+     * @param array $a1 The starting array.
+     * @param array $a2 The array that is put over the starting array.
+     * @return array The merged array.
+     */
     public static function arrayMergeRecursive(array $a1, array $a2):array{
         foreach($a2 as $key => $value){
             if(is_array($value) && isset($a1[$key]) && is_array($a1[$key])){
@@ -1089,17 +1243,30 @@ class mcservers{
 
         return $cleanArray;
     }
+    /**
+     * Generates a random string of a certain length, uses 0-9, a-z and A-Z.
+     *
+     * @param integer $length The length of the string.
+     * @return string The random string.
+     */
     public static function randomStuff(int $length=16):string{
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $charactersLength = strlen($characters);
         $randomString = '';
         
-        for ($i = 0; $i < $length; $i++) {
-            $randomString .= $characters[random_int(0, $charactersLength - 1)];
+        for($i=0; $i < $length; $i++){
+            $randomString .= $characters[random_int(0, $charactersLength -1)];
         }
         
         return $randomString;
     }
+    /**
+     * Reads a file of a specified type. Types are json, text, ini, yaml, toml.
+     *
+     * @param string $file The path to the file.
+     * @param string $format The format to read the file as.
+     * @return mixed The decoded values of the file.
+     */
     public static function multiTypeRead(string $file, string $format):mixed{
         if(!is_file($file)){
             return null;
@@ -1123,6 +1290,15 @@ class mcservers{
         
         return null;
     }
+    /**
+     * Writes a file of a specified type, supports the same formats as multiTypeRead().
+     *
+     * @param string $file The path to the file.
+     * @param string $format The format of the file.
+     * @param mixed $data The data to put into the file.
+     * @param boolean $overwrite Weather to overwrite any existing file.
+     * @return boolean Weather the file has been written or not.
+     */
     public static function multiTypeWrite(string $file, string $format, mixed $data, bool $overwrite=true):bool{
         if(is_file($file) && !$overwrite){
             return false;
@@ -1169,8 +1345,16 @@ class mcservers{
         
         return false;
     }
-    public static function writeIniFile(string $file, array $data):bool{
-        $properties = "";
+    /**
+     * Writes an ini file.
+     *
+     * @param string $file The path to the file.
+     * @param array $data The data to put into the ini file.
+     * @param boolean $overwrite Weather to overwrite any existing file.
+     * @return boolean Weather the file has been written successfully.
+     */
+    public static function writeIniFile(string $file, array $data, bool $overwrite=true):bool{
+        $ini = "";
         foreach($data as $key => $value){
             if(!is_string($key)){
                 continue;
@@ -1185,12 +1369,23 @@ class mcservers{
                 continue;
             }
 
-            $properties .= "$key=$value\n";
+            $ini .= "$key=$value\n";
         }
 
-        return files::mkFile($file, $properties, "w", true);
+        return files::mkFile($file, $ini, "w", $overwrite);
     }
-    public static function specialSetting(string $id, string $setting, string $action="read", mixed $value=null, bool $overwrite=false):mixed{
+    /**
+     * Performs an action on a special setting for a server.
+     *
+     * @param string $id The id of the server.
+     * @param string $setting A settings style value name, see readme string replacements note.
+     * @param string $action The action to perform on the setting, can be read, write, isset, unset.
+     * @param mixed $value The value if the action is set to write.
+     * @param boolean $overwrite Weather to overwrite the value if it is already set.
+     * @param boolean $setDefaultOverride Weather to set the new value as a new default value.
+     * @return mixed isset, write and unset is boolean indicating success, read is setting value, null is error.
+     */
+    public static function specialSetting(string $id, string $setting, string $action="read", mixed $value=null, bool $overwrite=false, bool $setDefaultOverride=false):mixed{
         $serverDir = self::serverDir($id);
         if(!is_string($serverDir)){
             return null;
@@ -1206,8 +1401,21 @@ class mcservers{
         }
         $settingInfo = $serverInfo['specialSettings'][$setting];
 
-        if(!isset($settingInfo['file']) || !isset($settingInfo['format']) || !isset($settingInfo['setting'])){
+        if(!isset($settingInfo['file']) || !is_string($settingInfo['file']) || empty($settingInfo['file'])){
             return null;
+        }
+        if(!isset($settingInfo['format']) || !is_string($settingInfo['format']) || empty($settingInfo['format'])){
+            return null;
+        }
+        if($settingInfo['format'] !== "text"){
+            if(!isset($settingInfo['setting']) || !is_string($settingInfo['setting']) || empty($settingInfo['setting'])){
+                return null;
+            }
+        }
+
+        if($setDefaultOverride){
+            $serverInfo['specialSettings'][$setting]['default'] = $value;
+            self::setServerInfo($id, $serverInfo);
         }
 
         $settingFile = $serverDir . "\\" . $settingInfo['file'];
@@ -1259,9 +1467,11 @@ class mcservers{
         return $result;
     }
     /**
-     * Compares two minecraft 1.x.x versions with support for -prex and -rcx.
-     * 
-     * @return int Returns 1 if v1 is larger, -1 if v2 is larger, 0 when equal, or -2 on error
+     * Compares two minecraft 1.x.x versions with support for -prex and -rcx and integer versions.
+     *
+     * @param string $v1 The first version.
+     * @param string $v2 The version to compare to the first version.
+     * @return integer Returns 1 if v1 is larger, -1 if v2 is larger, 0 when equal, or -2 on error
      */
     public static function compareMinecraftVersions(string $v1, string $v2):int{
         // Check if both are simple integers
@@ -1281,6 +1491,12 @@ class mcservers{
         return minecraft_releases_api::compareVersionsUsingTimes($v1, $v2);
     }
     //Server status
+    /**
+     * Gets a servers status from communicator / server manager.
+     *
+     * @param string $id The id of the server.
+     * @return array|false The manager stats of the server.
+     */
     public static function getServerStats(string $id):array|false{
         if(!self::validateId($id,false)){
             return false;
@@ -1294,6 +1510,13 @@ class mcservers{
 
         return $result['stats'];
     }
+    /**
+     * Pings a local server based on its id, this does not use specialSettings, see readme.
+     *
+     * @param string $id The id of the server.
+     * @param float $timeout The timeout of the ping.
+     * @return boolean Weather the ping succeeded or not.
+     */
     public static function pingServer(string $id, float $timeout=0.2):bool{
         if(self::validateId($id,false)){
             $serverInfo = self::serverInfo($id);
@@ -1312,6 +1535,12 @@ class mcservers{
         }
         return false;
     }
+    /**
+     * Gets the state of a given minecraft server.
+     *
+     * @param string $id The server id.
+     * @return string The state of the minecraft server, or unknown on error.
+     */
     public static function serverStatus(string $id):string{
         $result = self::getServerStats($id);
         if($result !== false){
@@ -1319,17 +1548,49 @@ class mcservers{
         }
         return 'unknown';
     }
-    public static function mirrorConsole(string $id, int $interval=1){
+    /**
+     * Uses server stats newoutput to mirror the output of a server.
+     *
+     * @param string $id The id of the server.
+     * @param integer $interval How quickly to update the output, this must be above 0.
+     * @param integer $checks How many intervals to run until the function returns, 0 means no limit, be careful with this.
+     * @return void
+     */
+    public static function mirrorConsole(string $id, int $interval=1, int $checks=0){
+        $count = 0;
+
+        if($interval < 1){
+            return;
+        }
+
         while(true){
             $stats = self::getServerStats($id);
+
             if(is_array($stats) && isset($stats['newoutput']) && is_string($stats['newoutput'])){
                 echo $stats['newoutput'];
             }
+
+            if($count > $checks){
+                return;
+            }
+
             sleep($interval);
+
+            if($checks){
+                $count ++;
+            }
         }
     }
-    public static function manageSuccess(string $id, string $action, string $payload=""):bool{
-        $result = self::manage($id, $action, $payload);
+    /**
+     * Very similar to manage() but returns the value of success from the response.
+     *
+     * @param string $id The id of the server.
+     * @param string $action The command to send to the server manager.
+     * @param string $extra Any extra information the command needs.
+     * @return boolean
+     */
+    public static function manageSuccess(string $id, string $action, mixed $extra=null):bool{
+        $result = self::manage($id, $action, $extra);
 
         if(!is_array($result) || !isset($result['success']) || !$result['success']){
             return false;
@@ -1340,6 +1601,14 @@ class mcservers{
 
     //Manager
     //Run from client
+    /**
+     * Sends a command to the server manager, see readme.
+     *
+     * @param string $id The id of the minecraft server.
+     * @param string $action The command to send to the server manager.
+     * @param mixed $extra Any extra data the command needs.
+     * @return array|false Returns the response from the server manager or false on failure.
+     */
     public static function manage(string $id, string $action, mixed $extra=null):array|false{
         if(!self::validateId($id, true)){
             return false;
@@ -1360,6 +1629,9 @@ class mcservers{
     }
 
     //Run by communicator
+    /**
+     * @internal
+     */
     public static function manager_start():void{
         $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
         if(!isset($backtrace[2]['class']) || $backtrace[2]['class'] !== "communicator_server"){
@@ -1378,6 +1650,9 @@ class mcservers{
             }
         }
     }
+    /**
+     * @internal
+     */
     public static function manager_repeat():void{
         $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
         if(!isset($backtrace[2]['class']) || $backtrace[2]['class'] !== "communicator_server"){
@@ -1395,6 +1670,9 @@ class mcservers{
         }
         self::$bypassCommunicatorRunRequrement = false;
     }
+    /**
+     * @internal
+     */
     public static function manager_stop():void{
         $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
         if(!isset($backtrace[2]['class']) || $backtrace[2]['class'] !== "communicator_server"){
@@ -1431,6 +1709,9 @@ class mcservers{
             sleep(2);
         }
     }
+    /**
+     * @internal
+     */
     public static function communicatorServerThingsToDo():array{
         return [
             [
@@ -1448,6 +1729,9 @@ class mcservers{
             ],
         ];
     }
+    /**
+     * @internal
+     */
     public static function communicatorServerActions():array{
         return [
             "manage" => [
@@ -1474,6 +1758,9 @@ class mcservers{
     }
 
     //Run by manage
+    /**
+     * @internal
+     */
     public static function manager_run(string $id, string $action, mixed $extra=null):array{
         $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
         if(!isset($backtrace[2]['class']) || $backtrace[2]['class'] !== "communicator_server"){
@@ -1507,7 +1794,6 @@ class mcservers{
                 "memory" => 0,
 
                 "newoutput" => "",
-                "lastcommand" => "",
 
                 "lastStart" => 0,
                 "lastStop" => 0,
@@ -2105,6 +2391,14 @@ class mcservers{
     }
 
     //Server management
+    /**
+     * Tells the server manager to create a backup of the specified server. This function waits until the backup is complete to return if it is able to start the backup.
+     *
+     * @param string $id The id of the server.
+     * @param string $backupName The name of the backup, or empty string for no backup name.
+     * @param boolean $overwrite Weather to overwrite any backup with the same name.
+     * @return boolean Weather the backup was successful or not.
+     */
     public static function backupServer(string $id, string $backupName="", bool $overwrite=false):bool{
         if(self::validateId($id,false)){
             mklog(2, "Failed to backup due to invalid server id");
@@ -2147,7 +2441,7 @@ class mcservers{
 
             $tries = 0;
             while(self::serverStatus($id) !== "stopped"){
-                sleep(1);
+                sleep(2);
                 $tries ++;
 
                 if($tries > 10){
@@ -2158,8 +2452,12 @@ class mcservers{
         }
 
         if(!self::manageSuccess($id, "backup", $backupName)){
-            mklog(2, 'Failed to perform backup ' . $backupName . ' for server ' . $id);
+            mklog(2, 'Failed to start backup ' . $backupName . ' for server ' . $id);
             return false;
+        }
+
+        while(self::serverStatus($id) === "backup"){
+            sleep(2);
         }
 
         if($serverWasRunning){
@@ -2170,12 +2468,30 @@ class mcservers{
         
         return true;
     }
+    /**
+     * Asks the server manager to start a server.
+     *
+     * @param string $id The id for the server.
+     * @return boolean Weather the server is now starting or not.
+     */
     public static function start(string $id):bool{
         return self::manageSuccess($id, "start");
     }
+    /**
+     * Asks the server manager to stop a server.
+     *
+     * @param string $id The id of the server.
+     * @return boolean Weather the server is now stopping.
+     */
     public static function stop(string $id):bool{
         return self::manageSuccess($id,"stop");
     }
+    /**
+     * Adds a server to the main servers list.
+     *
+     * @param string $id The id of the server.
+     * @return boolean Indicates success.
+     */
     public static function addMainServer(string $id):bool{
         if(self::validateId($id,false)){
             return false;
@@ -2191,6 +2507,12 @@ class mcservers{
 
         return settings::set('mainServers', $servers, true);
     }
+    /**
+     * Removes a server from the main servers list.
+     *
+     * @param string $id The id of the server.
+     * @return boolean Indicates success.
+     */
     public static function removeMainServer(string $id):bool{
         if(!self::validateId($id,false)){
             return false;
@@ -2210,9 +2532,24 @@ class mcservers{
         
         return settings::set('mainServers', $servers, true);
     }
+    /**
+     * Sends a minecraft server console command to a server.
+     *
+     * @param string $id The id of the server.
+     * @param string $command The minecraft command to send to the server.
+     * @return boolean Indicates success.
+     */
     public static function sendCommand(string $id, string $command):bool{
         return self::manageSuccess($id, "sendCommand", $command);
     }
+    /**
+     * Deletes a minecraft server.
+     * Deleting is actually moving it to the deleted folder.
+     *
+     * @param string $id The id of the server.
+     * @param boolean $silent Weather to pre aggree to the are you sure prompt.
+     * @return boolean Indicates success.
+     */
     public static function deleteServer(string $id, bool $silent=false):bool{
         if(!self::validateId($id,false)){
             return false;
@@ -2249,9 +2586,20 @@ class mcservers{
         return true;
     }
     //All servers
+    /**
+     * Gets a list of all the states of the minecraft servers.
+     *
+     * @param boolean $checkSettings Weather to include the servers name and version info in the response.
+     * @return array|false State information for every server on success or false on failure.
+     */
     public static function getManagerServerStates(bool $checkSettings=false):array|false{
         return communicator_client::customAction("mcservers", "getManagerStates", [$checkSettings]);
     }
+    /**
+     * Lists all servers.
+     *
+     * @return array|false A list of all the server ids or false on failure.
+     */
     public static function allServers():array|false{
         $servers = [];
         $serversDir = self::serverDir();
@@ -2273,6 +2621,12 @@ class mcservers{
 
         return $servers;
     }
+    /**
+     * Gets a servers directory, if the id is empty it gets the directory that holds all the servers.
+     *
+     * @param string $id The optional server id.
+     * @return string|false The directory on success or false on failure.
+     */
     public static function serverDir(string $id=""):string|false{
         $path = settings::read('serversPath');
         if(!is_string($path)){
@@ -2298,6 +2652,12 @@ class mcservers{
         return $path;
     }
     //Server process
+    /**
+     * Gets the pid of the java process at the bottom of a process tree.
+     *
+     * @param string|integer $pid The pid of the parent process.
+     * @return string The pid of the bottom java process, or "unknown" on failure.
+     */
     public static function getRootJavaProcess(string|int $pid):string{
         $childProcesses = system_api::getProcessChildProcesses($pid);
         if(count($childProcesses)>0){
@@ -2316,6 +2676,12 @@ class mcservers{
 
         return "unknown";
     }
+    /**
+     * Gets the generated start command used to start the minecraft server.
+     *
+     * @param string $id The id of the server.
+     * @return string|false The command string on success or false on failure.
+     */
     public static function whatIsTheStartCommand(string $id):string|false{
         $serverDir = self::serverDir($id);
         if(!is_string($serverDir)){
@@ -2330,6 +2696,15 @@ class mcservers{
         return self::manager_makeRunCommand($serverInfo, $serverDir);
     }
     //Content
+    /**
+     * Adds some modrinth content to a server.
+     *
+     * @param string $id The id of the server.
+     * @param string $projectId The project id of the modrinth content.
+     * @param string $versionId The version id of the modrinth content.
+     * @param string $type The type of modrinth content, this is used for the destination of the content, this can be mod, plugin, datapack or resoursepack.
+     * @return string A text response that starts with "Success" on success.
+     */
     public static function addModrinthContentToServer(string $id, string $projectId, string $versionId, string $type):string{
         $info = self::serverInfo($id);
 
@@ -2410,6 +2785,13 @@ class mcservers{
 
         return $returnString;
     }
+    /**
+     * Lists the content installed in the server.
+     *
+     * @param string $id The id of the server.
+     * @param string $type The type of content to list, this can be mod, plugin, datapack or resoursepack.
+     * @return array|false An array of content on success or false on failure.
+     */
     public static function listContents(string $id, string $type):array|false{
         if(!self::validateId($id,false)){
             return false;
@@ -2459,6 +2841,14 @@ class mcservers{
 
         return $array;
     }
+    /**
+     * Gets the destination for some content.
+     *
+     * @param string $id The id of the server.
+     * @param string $type The type of content, this can be mod, plugin, datapack or resoursepack.
+     * @param string $file The path of the file that will go there, this is just used for the file name at the end of the path.
+     * @return string|false The path where to put the file or false on failure.
+     */
     public static function getTypeDestination(string $id, string $type, string $file):string|false{
         if(!self::validateId($id,false)){
             return false;
