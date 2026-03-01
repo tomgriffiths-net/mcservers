@@ -2,7 +2,7 @@
 This is a package for PHP-CLI that is able to manage local minecraft servers.
 <br>
 
-For function documentation see https://example.com.
+For function documentation see https://www.tomgriffiths.net/php-cli/docs/packages/mcservers.html.
 
 ---
 <br>

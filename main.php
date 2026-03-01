@@ -1,8 +1,6 @@
 <?php
 /**
- * A package for controlling minecraft servers.
- * @author Tom Griffiths
- * @version 19
+ * v19 - A package for controlling minecraft servers.
  */
 class mcservers{
     private static $localServerStats = [];
