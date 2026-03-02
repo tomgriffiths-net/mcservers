@@ -1743,7 +1743,8 @@ class mcservers{
                     2 => null
                 ]
             ],
-            "getManagerStates" =>[
+
+            "getManagerStates" => [
                 "function" => "mcservers::manager_getServerStates",
                 "args" => [
                     "--0",
@@ -1751,7 +1752,111 @@ class mcservers{
                 "defArgs" => [
                     0 => false
                 ]
-            ]
+            ],
+
+            "listVersions" => [
+                "function" => "mcservers::listVersions",
+                "args" => [
+                    "--0",
+                    "--1",
+                    "--2"
+                ],
+                "defArgs" => [
+                    1 => null,
+                    2 => null
+                ]
+            ],
+            "listSpecialVersions" => [
+                "function" => "mcservers::listSpecialVersions",
+                "args" => [
+                    "--0",
+                    "--1",
+                    "--2"
+                ],
+                "defArgs" => [
+                    2 => null
+                ]
+            ],
+            "listChannels" => [
+                "function" => "mcservers::listChannels",
+                "args" => [
+                    "--0"
+                ]
+            ],
+            "serverInfo" => [
+                "function" => "mcservers::serverInfo",
+                "args" => [
+                    "--0",
+                ]
+            ],
+            "deleteServer" => [
+                "function" => "mcservers::deleteServer",
+                "args" => [
+                    "--0",
+                    true
+                ]
+            ],
+            "createServer" => [
+                "function" => "mcservers::createServer",
+                "args" => [
+                    "--0",
+                    "--1"
+                ],
+                "defArgs" => [
+                    0 => [],
+                    1 => []
+                ]
+            ],
+            "updateServer" => [
+                "function" => "mcservers::updateServer",
+                "args" => [
+                    "--0",
+                    "--1",
+                    "--2"
+                ],
+                "defArgs" => [
+                    1 => [],
+                    2 => false
+                ]
+            ],
+            "whatIsTheStartCommand" => [
+                "function" => "mcservers::whatIsTheStartCommand",
+                "args" => [
+                    "--0",
+                ]
+            ],
+            "serverPropertiesFileInfo" => [
+                "function" => "mcservers::serverPropertiesFileInfo"
+            ],
+            "parseServerPropertiesFile" => [
+                "function" => "mcservers::parseServerPropertiesFile",
+                "args" => [
+                    "--0",
+                ]
+            ],
+            "writeServerPropertiesFile" => [
+                "function" => "mcservers::writeServerPropertiesFile",
+                "args" => [
+                    "--0",
+                    "--1"
+                ]
+            ],
+            "listContents" => [
+                "function" => "mcservers::listContents",
+                "args" => [
+                    "--0",
+                    "--1"
+                ]
+            ],
+            "addModrinthContentToServer" => [
+                "function" => "mcservers::addModrinthContentToServer",
+                "args" => [
+                    "--0",
+                    "--1",
+                    "--2",
+                    "--3"
+                ]
+            ],
         ];
     }
 
@@ -2561,6 +2666,34 @@ class mcservers{
 
         if(!$go){
             return false;
+        }
+
+        $status = self::serverStatus($id);
+        if(!is_string($status)){
+            mklog(2, "Failed to get server status");
+        }
+        else{
+            if($status !== "stopped"){
+                if($status !== "online"){
+                    mklog(2, "Unable to delete server as it is doing things");
+                    return false;
+                }
+
+                if(!self::stop($id)){
+                    mklog(2, "Failed to send stop command to server");
+                    return false;
+                }
+
+                $start = time();
+                while(self::serverStatus($id) !== "stopped"){
+                    if(time() - $start > 20){
+                        mklog(2, "The server did not stop in time");
+                        return false;
+                    }
+
+                    sleep(2);
+                }
+            }
         }
 
         mklog(1, 'Deleting server ' . $id);
