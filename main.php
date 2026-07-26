@@ -258,6 +258,7 @@ class mcservers{
                             if(isset($lines[3])){
                                 array_shift($lines);
                                 array_shift($lines);
+                                array_shift($lines);
                                 $command = implode(" ",$lines);
                                 if(!self::sendCommand($server,$command)){
                                     echo "Failed to send command to server\n";
@@ -1789,6 +1790,15 @@ class mcservers{
                     "--0",
                 ]
             ],
+            "serverDir" => [
+                "function" => "mcservers::serverDir",
+                "args" => [
+                    "--0",
+                ],
+                "defArgs" => [
+                    0 => ""
+                ]
+            ],
             "deleteServer" => [
                 "function" => "mcservers::deleteServer",
                 "args" => [
@@ -2503,7 +2513,7 @@ class mcservers{
      * @return boolean Weather the backup was successful or not.
      */
     public static function backupServer(string $id, string $backupName="", bool $overwrite=false):bool{
-        if(self::validateId($id,false)){
+        if(!self::validateId($id,false)){
             mklog(2, "Failed to backup due to invalid server id");
             return false;
         }

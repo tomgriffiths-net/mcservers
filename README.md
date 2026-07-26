@@ -28,7 +28,7 @@ All commands start with "mcservers", some functionality is only available throug
 ## Full command examples
 - **mcservers server all start**: Starts all the minecraft servers.
 - **mcservers server on stop**: Stops all running minecraft servers.
-- **mcservers server 001 backup weekly shutup**: Creates a backup for server 001 called "weekly" and overwrites the old "weekly" backup.
+- **mcservers server 001 backup weekly yes**: Creates a backup for server 001 called "weekly" and overwrites the old "weekly" backup.
 - **mcservers server main sendcommand say hi**: Tells all the main servers to run "/say hi" in their consoles.
 - **mcservers create**: Creates a default server.
 - **mcservers create chan=snapshot**: Creates a server with the latest vanilla snapshot.
